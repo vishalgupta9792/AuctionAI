@@ -70,7 +70,13 @@ router.post("/create-order", protect, async (req, res) => {
       auctionTitle: auction.title
     });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    const message =
+      error?.error?.description ||
+      error?.description ||
+      error?.message ||
+      "Payment gateway error while creating order";
+    const status = error?.statusCode || 500;
+    return res.status(status).json({ message });
   }
 });
 
@@ -117,7 +123,13 @@ router.post("/verify", protect, async (req, res) => {
 
     return res.json({ success: true, paymentId: razorpay_payment_id });
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+    const message =
+      error?.error?.description ||
+      error?.description ||
+      error?.message ||
+      "Payment verification failed";
+    const status = error?.statusCode || 500;
+    return res.status(status).json({ message });
   }
 });
 
