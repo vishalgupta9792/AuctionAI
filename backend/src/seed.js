@@ -4,6 +4,7 @@ import User from "./models/User.js";
 import Auction from "./models/Auction.js";
 import Bid from "./models/Bid.js";
 import FraudReport from "./models/FraudReport.js";
+import Payment from "./models/Payment.js";
 
 dotenv.config();
 
@@ -14,7 +15,8 @@ const run = async () => {
     User.deleteMany({}),
     Auction.deleteMany({}),
     Bid.deleteMany({}),
-    FraudReport.deleteMany({})
+    FraudReport.deleteMany({}),
+    Payment.deleteMany({})
   ]);
 
   const [admin, seller, bidder1, bidder2] = await User.create([

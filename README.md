@@ -8,7 +8,7 @@ Final Year Major Project (B.Tech / B.E. CSE) using MERN + Socket.io + OpenAI.
 - Database: MongoDB (Mongoose)
 - Real-time: Socket.io
 - AI: OpenAI API (with heuristic fallback)
-- Payment: Dummy payment simulation API
+- Payment: Razorpay integration (real payment) + test mode
 
 ## Implemented Features
 
@@ -44,7 +44,7 @@ Final Year Major Project (B.Tech / B.E. CSE) using MERN + Socket.io + OpenAI.
 
 ### 6. Dashboards
 - Seller: auctions, bids, revenue summary, notifications
-- Bidder: active bids, won auctions, bid history, watchlist, dummy payment
+- Bidder: active bids, won auctions, bid history, watchlist, Razorpay payment
 - Admin: users, fraud reports, platform stats
 
 ### 7. Navbar
@@ -68,7 +68,7 @@ Final Year Major Project (B.Tech / B.E. CSE) using MERN + Socket.io + OpenAI.
 - Watchlist APIs and UI integration
 - Notifications APIs and dashboard display
 - Dark/Light mode
-- Dummy payment simulation
+- Razorpay payment integration
 
 ---
 
@@ -177,8 +177,7 @@ After `npm run seed`:
 - `GET /api/notifications`
 - `PATCH /api/notifications/:id/read`
 
-### Payment (Dummy)
-- `POST /api/payments/simulate`
+### Payment (Razorpay)`r`n- `POST /api/payments/create-order``r`n- `POST /api/payments/verify``r`n- `GET /api/payments/my`
 
 ---
 
@@ -226,3 +225,18 @@ After `npm run seed`:
 - Home page shows products
 - `/live` shows live auctions with countdown
 - Place bid and verify live update over socket
+
+
+## Razorpay Setup (Real Payment)
+
+Update `backend/.env`:
+- `RAZORPAY_KEY_ID=your_key_id`
+- `RAZORPAY_KEY_SECRET=your_key_secret`
+- `RAZORPAY_CURRENCY=INR`
+
+Payment APIs:
+- `POST /api/payments/create-order`
+- `POST /api/payments/verify`
+- `GET /api/payments/my`
+
+Frontend bidder dashboard now opens Razorpay checkout for won auctions.
