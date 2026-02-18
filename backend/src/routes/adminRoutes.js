@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import Auction from "../models/Auction.js";
 import Bid from "../models/Bid.js";
 import FraudReport from "../models/FraudReport.js";
+import Payment from "../models/Payment.js";
 
 const router = express.Router();
 
@@ -31,6 +32,14 @@ router.get("/users", protect, allowRoles("Admin"), async (_, res) => {
 router.get("/fraud", protect, allowRoles("Admin"), async (_, res) => {
   const reports = await FraudReport.find().populate("user", "name email").populate("auction", "title").sort({ createdAt: -1 });
   return res.json(reports);
+});
+
+router.get("/payments", protect, allowRoles("Admin"), async (_, res) => {
+  const payments = await Payment.find()
+    .populate("user", "name email")
+    .populate("auction", "title")
+    .sort({ createdAt: -1 });
+  return res.json(payments);
 });
 
 export default router;

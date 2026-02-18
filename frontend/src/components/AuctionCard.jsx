@@ -7,6 +7,8 @@ const statusClasses = {
 };
 
 const AuctionCard = ({ auction }) => {
+  const formatINR = (amount) => `INR ${Number(amount || 0).toLocaleString("en-IN")}`;
+
   const label =
     auction.status === "Ended"
       ? auction.highestBidder
@@ -40,7 +42,7 @@ const AuctionCard = ({ auction }) => {
 
         <div className="mt-4 flex items-center justify-between text-sm">
           <span className="rounded-md bg-slate-700 px-2 py-1 text-slate-200">{auction.bidCount || 0} bids</span>
-          <span className="text-lg font-bold text-emerald-300">${auction.currentPrice}</span>
+          <span className="text-lg font-bold text-emerald-300">{formatINR(auction.currentPrice)}</span>
         </div>
       </div>
     </Link>

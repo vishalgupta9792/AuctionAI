@@ -4,8 +4,10 @@ import Notification from "../models/Notification.js";
 import { getAuctionStatus } from "../utils/auctionStatus.js";
 import { runFraudChecks } from "./fraudService.js";
 
-const minIncrement = (currentPrice) => {
-  if (currentPrice < 100) return 5;
+const minIncrement = (currentPrice, bidCount = 1) => {
+  // Demo-friendly rule: first bid can match base price (e.g., Rs 1)
+  if (!bidCount) return 0;
+  if (currentPrice < 100) return 1;
   if (currentPrice < 1000) return 20;
   return 50;
 };
@@ -18,7 +20,7 @@ export const placeBidService = async ({ auctionId, bidderId, amount, maxAutoBid,
   if (status !== "Live") throw new Error(`Auction is ${status}`);
 
   const current = auction.currentPrice || auction.basePrice;
-  const required = current + minIncrement(current);
+  const required = current + minIncrement(current, auction.bidCount);
   if (amount < required) {
     throw new Error(`Bid must be at least ${required}`);
   }

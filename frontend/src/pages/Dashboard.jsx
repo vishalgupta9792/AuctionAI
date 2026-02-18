@@ -13,6 +13,8 @@ const loadRazorpayScript = () =>
   });
 
 const Dashboard = () => {
+  const formatINR = (amount) => `INR ${Number(amount || 0).toLocaleString("en-IN")}`;
+
   const { user } = useAuth();
   const [data, setData] = useState(null);
   const [notifications, setNotifications] = useState([]);
@@ -131,7 +133,7 @@ const Dashboard = () => {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="card">Total Auctions: {data.totalAuctions}</div>
           <div className="card">Total Bids: {data.totalBids}</div>
-          <div className="card">Revenue Summary: ${data.revenue}</div>
+          <div className="card">Revenue Summary: {formatINR(data.revenue)}</div>
         </div>
         <div className="card">
           <h2 className="mb-2 font-semibold">Notifications</h2>
@@ -194,7 +196,7 @@ const Dashboard = () => {
           <h2 className="mb-2 font-semibold">Watchlist</h2>
           <ul className="space-y-1 text-sm">
             {data.watchlist.map((a) => (
-              <li key={a._id}>{a.title} - ${a.currentPrice}</li>
+              <li key={a._id}>{a.title} - {formatINR(a.currentPrice)}</li>
             ))}
           </ul>
         </div>

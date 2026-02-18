@@ -5,6 +5,8 @@ import BidPanel from "../components/BidPanel";
 import { useSocket } from "../context/SocketContext";
 
 const AuctionDetail = () => {
+  const formatINR = (amount) => `INR ${Number(amount || 0).toLocaleString("en-IN")}`;
+
   const { id } = useParams();
   const { socket } = useSocket();
   const [auction, setAuction] = useState(null);
@@ -99,7 +101,7 @@ const AuctionDetail = () => {
             <p className="mt-2 text-sm text-slate-500 sm:text-base">{auction.description}</p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">
               <span>Status: {auction.status}</span>
-              <span>Current: ${auction.currentPrice}</span>
+              <span>Current: {formatINR(auction.currentPrice)}</span>
               <span>Countdown: {countdown}</span>
             </div>
             <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -122,7 +124,7 @@ const AuctionDetail = () => {
               const isHighest = bid.bidder?._id === highestId;
               return (
                 <div key={bid._id} className={`animate-pop rounded border p-2 text-sm ${isHighest ? "border-brand-500 bg-brand-50 text-black" : ""}`}>
-                  <span className="font-semibold">{bid.bidder?.name || "Unknown"}</span> bid <b>${bid.amount}</b>
+                  <span className="font-semibold">{bid.bidder?.name || "Unknown"}</span> bid <b>{formatINR(bid.amount)}</b>
                   {isHighest && <span className="ml-2 rounded bg-brand-500 px-2 py-0.5 text-xs text-white">Highest</span>}
                 </div>
               );
