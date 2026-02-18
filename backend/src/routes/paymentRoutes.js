@@ -46,10 +46,12 @@ router.post("/create-order", protect, async (req, res) => {
     }
 
     const razorpay = getRazorpay();
+    const shortAuctionId = String(auctionId).slice(-8);
+    const shortTs = Date.now().toString().slice(-8);
     const order = await razorpay.orders.create({
       amount: Math.round(numericAmount * 100),
       currency: selectedCurrency,
-      receipt: `auc_${auctionId}_${Date.now()}`
+      receipt: `rcpt_${shortAuctionId}_${shortTs}`
     });
 
     const payment = await Payment.create({
