@@ -187,3 +187,42 @@ After `npm run seed`:
 - Add charts and advanced analytics for richer dashboard presentation.
 - Extend fraud detection with IP/device/session behavior.
 - Add unit/integration tests for production-level quality.
+
+---
+
+## Deployment (Render + Vercel)
+
+### Option A: Deploy both backend and frontend on Render
+
+1. Push code to GitHub (already done).
+2. On Render, create services from `render.yaml` in repo root.
+3. Set backend env vars in Render:
+   - `MONGO_URI`
+   - `JWT_SECRET`
+   - `OPENAI_API_KEY` (optional)
+   - `CLIENT_URL` = deployed frontend URL (for example `https://auctionai-frontend.onrender.com`)
+4. Set frontend env vars in Render:
+   - `VITE_API_BASE_URL` = backend URL + `/api`
+   - `VITE_SOCKET_URL` = backend URL
+5. Redeploy both services.
+
+### Option B: Backend on Render, Frontend on Vercel
+
+1. Deploy backend (`backend/`) on Render as Node Web Service.
+2. Add backend env vars:
+   - `MONGO_URI`
+   - `JWT_SECRET`
+   - `OPENAI_API_KEY` (optional)
+   - `CLIENT_URL` = Vercel frontend URL
+3. Deploy frontend (`frontend/`) on Vercel.
+4. In Vercel project env vars, add:
+   - `VITE_API_BASE_URL` = Render backend URL + `/api`
+   - `VITE_SOCKET_URL` = Render backend URL
+5. Redeploy frontend.
+
+### Quick check after deploy
+- Open frontend URL
+- Register/login works
+- Home page shows products
+- `/live` shows live auctions with countdown
+- Place bid and verify live update over socket

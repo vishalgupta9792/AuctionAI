@@ -19,7 +19,25 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://127.0.0.1:5173",
+  "http://127.0.0.1:5174"
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    }
+  })
+);
 app.use(express.json());
 
 app.get("/api/health", (_, res) => res.json({ ok: true }));
@@ -36,7 +54,7 @@ app.use("/api/payments", paymentRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: allowedOrigins,
     methods: ["GET", "POST"]
   }
 });
