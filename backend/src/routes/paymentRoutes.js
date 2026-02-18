@@ -19,7 +19,7 @@ const getRazorpay = () =>
 
 router.post("/create-order", protect, async (req, res) => {
   try {
-    const { auctionId, amount } = req.body;
+    const { auctionId, amount, currency } = req.body;
 
     if (!hasRazorpayKeys()) {
       return res.status(400).json({ message: "Razorpay keys are not configured on server" });
@@ -33,10 +33,22 @@ router.post("/create-order", protect, async (req, res) => {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
+    const allowedCurrencies = (process.env.RAZORPAY_ALLOWED_CURRENCIES || "INR,USD")
+      .split(",")
+      .map((c) => c.trim().toUpperCase())
+      .filter(Boolean);
+    const selectedCurrency = (currency || process.env.RAZORPAY_CURRENCY || "INR").toUpperCase();
+    if (!allowedCurrencies.includes(selectedCurrency)) {
+      return res.status(400).json({
+        message: `Currency ${selectedCurrency} is not allowed`,
+        allowedCurrencies
+      });
+    }
+
     const razorpay = getRazorpay();
     const order = await razorpay.orders.create({
       amount: Math.round(numericAmount * 100),
-      currency: process.env.RAZORPAY_CURRENCY || "INR",
+      currency: selectedCurrency,
       receipt: `auc_${auctionId}_${Date.now()}`
     });
 

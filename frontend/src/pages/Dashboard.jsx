@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState([]);
   const [paymentMsg, setPaymentMsg] = useState("");
   const [paidAuctionIds, setPaidAuctionIds] = useState(new Set());
+  const [selectedCurrency, setSelectedCurrency] = useState("INR");
 
   useEffect(() => {
     const load = async () => {
@@ -43,12 +44,18 @@ const Dashboard = () => {
 
         setData({ ...dash.data, watchlist: watchlist.data });
       } else {
-        const [stats, users, fraud] = await Promise.all([
+        const [stats, users, fraud, payments] = await Promise.all([
           api.get("/admin/stats"),
           api.get("/admin/users"),
-          api.get("/admin/fraud")
+          api.get("/admin/fraud"),
+          api.get("/admin/payments")
         ]);
-        setData({ stats: stats.data, users: users.data, fraud: fraud.data });
+        setData({
+          stats: stats.data,
+          users: users.data,
+          fraud: fraud.data,
+          payments: payments.data
+        });
       }
     };
     load();
@@ -74,7 +81,8 @@ const Dashboard = () => {
 
       const { data: order } = await api.post("/payments/create-order", {
         auctionId: auction._id,
-        amount: auction.currentPrice
+        amount: auction.currentPrice,
+        currency: selectedCurrency
       });
 
       const options = {
@@ -152,12 +160,24 @@ const Dashboard = () => {
 
         <div className="card">
           <h2 className="mb-2 font-semibold">Won Auctions Payment (Razorpay)</h2>
+          <div className="mb-3 flex items-center gap-2 text-sm">
+            <label htmlFor="currency">Currency:</label>
+            <select
+              id="currency"
+              className="rounded border bg-transparent px-2 py-1"
+              value={selectedCurrency}
+              onChange={(e) => setSelectedCurrency(e.target.value)}
+            >
+              <option value="INR" className="text-black">INR</option>
+              <option value="USD" className="text-black">USD</option>
+            </select>
+          </div>
           <ul className="space-y-2 text-sm">
             {data.wonAuctions.map((b) => {
               const isPaid = paidAuctionIds.has(b.auction?._id);
               return (
                 <li key={b._id} className="flex flex-col gap-2 rounded border p-2 sm:flex-row sm:items-center sm:justify-between">
-                  <span className="min-w-0">{b.auction?.title} - INR {b.auction?.currentPrice}</span>
+                  <span className="min-w-0">{b.auction?.title} - {selectedCurrency} {b.auction?.currentPrice}</span>
                   {isPaid ? (
                     <span className="rounded bg-emerald-600 px-3 py-1 text-xs text-white">Paid</span>
                   ) : (
@@ -218,6 +238,45 @@ const Dashboard = () => {
             <li key={f._id}>{f.user?.name} | {f.reason} | {f.severity}</li>
           ))}
         </ul>
+      </div>
+      <div className="card">
+        <h2 className="mb-2 font-semibold">All Payments</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-left text-sm">
+            <thead>
+              <tr className="border-b">
+                <th className="px-2 py-2">User</th>
+                <th className="px-2 py-2">Auction</th>
+                <th className="px-2 py-2">Amount</th>
+                <th className="px-2 py-2">Status</th>
+                <th className="px-2 py-2">Order ID</th>
+                <th className="px-2 py-2">Payment ID</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(data.payments || []).map((p) => (
+                <tr key={p._id} className="border-b">
+                  <td className="px-2 py-2">{p.user?.name || "-"}</td>
+                  <td className="px-2 py-2">{p.auction?.title || "-"}</td>
+                  <td className="px-2 py-2">{p.currency} {p.amount}</td>
+                  <td className="px-2 py-2">
+                    <span className={`rounded px-2 py-1 text-xs ${
+                      p.status === "paid"
+                        ? "bg-emerald-600 text-white"
+                        : p.status === "failed"
+                          ? "bg-red-600 text-white"
+                          : "bg-amber-500 text-black"
+                    }`}>
+                      {p.status}
+                    </span>
+                  </td>
+                  <td className="px-2 py-2">{p.orderId}</td>
+                  <td className="px-2 py-2">{p.paymentId || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
