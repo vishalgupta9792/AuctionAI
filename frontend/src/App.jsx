@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import ChatbotWidget from "./components/ChatbotWidget";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
@@ -21,7 +22,7 @@ function App() {
   }, [dark]);
 
   return (
-    <div>
+    <div className="min-h-screen">
       <Navbar dark={dark} setDark={setDark} />
       <main className="mx-auto max-w-6xl p-4">
         <Routes>
@@ -49,6 +50,7 @@ function App() {
           <Route path="/register" element={<Register />} />
         </Routes>
       </main>
+      <Footer />
       <ChatbotWidget />
     </div>
   );

@@ -53,18 +53,18 @@ const Dashboard = () => {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Seller Dashboard</h1>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="card">Total Auctions: {data.totalAuctions}</div>
           <div className="card">Total Bids: {data.totalBids}</div>
           <div className="card">Revenue Summary: ${data.revenue}</div>
         </div>
         <div className="card">
           <h2 className="mb-2 font-semibold">Notifications</h2>
-          <ul className="space-y-1 text-sm">
+          <ul className="space-y-2 text-sm">
             {notifications.map((n) => (
-              <li key={n._id}>
-                {n.message}
-                {!n.read && <button className="ml-2 rounded border px-2 py-0.5" onClick={() => markRead(n._id)}>Mark read</button>}
+              <li key={n._id} className="flex flex-wrap items-start gap-2">
+                <span className="min-w-0 flex-1">{n.message}</span>
+                {!n.read && <button className="rounded border px-2 py-0.5" onClick={() => markRead(n._id)}>Mark read</button>}
               </li>
             ))}
           </ul>
@@ -77,7 +77,7 @@ const Dashboard = () => {
     return (
       <div className="space-y-4">
         <h1 className="text-2xl font-bold">Bidder Dashboard</h1>
-        <div className="grid gap-3 md:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="card">Active Bids: {data.activeBids.length}</div>
           <div className="card">Won Auctions: {data.wonAuctions.length}</div>
           <div className="card">Bid History: {data.bidHistory.length}</div>
@@ -87,9 +87,9 @@ const Dashboard = () => {
           <h2 className="mb-2 font-semibold">Won Auctions Payment (Dummy)</h2>
           <ul className="space-y-2 text-sm">
             {data.wonAuctions.map((b) => (
-              <li key={b._id} className="flex items-center justify-between rounded border p-2">
-                <span>{b.auction?.title} - ${b.auction?.currentPrice}</span>
-                <button className="btn-primary" onClick={() => simulatePayment(b.auction)}>Pay Now</button>
+              <li key={b._id} className="flex flex-col gap-2 rounded border p-2 sm:flex-row sm:items-center sm:justify-between">
+                <span className="min-w-0">{b.auction?.title} - ${b.auction?.currentPrice}</span>
+                <button className="btn-primary w-full sm:w-auto" onClick={() => simulatePayment(b.auction)}>Pay Now</button>
               </li>
             ))}
           </ul>
@@ -107,11 +107,11 @@ const Dashboard = () => {
 
         <div className="card">
           <h2 className="mb-2 font-semibold">Notifications</h2>
-          <ul className="space-y-1 text-sm">
+          <ul className="space-y-2 text-sm">
             {notifications.map((n) => (
-              <li key={n._id}>
-                {n.message}
-                {!n.read && <button className="ml-2 rounded border px-2 py-0.5" onClick={() => markRead(n._id)}>Mark read</button>}
+              <li key={n._id} className="flex flex-wrap items-start gap-2">
+                <span className="min-w-0 flex-1">{n.message}</span>
+                {!n.read && <button className="rounded border px-2 py-0.5" onClick={() => markRead(n._id)}>Mark read</button>}
               </li>
             ))}
           </ul>
@@ -123,7 +123,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-4">
       <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="card">Users: {data.stats.users}</div>
         <div className="card">Auctions: {data.stats.auctions}</div>
         <div className="card">Bids: {data.stats.bids}</div>
@@ -131,7 +131,7 @@ const Dashboard = () => {
       </div>
       <div className="card">
         <h2 className="mb-2 font-semibold">Users</h2>
-        <ul className="space-y-1 text-sm">
+        <ul className="space-y-1 break-words text-sm">
           {data.users.map((u) => (
             <li key={u._id}>{u.name} | {u.email} | {u.role} | Flagged: {u.isFlagged ? "Yes" : "No"}</li>
           ))}
@@ -139,7 +139,7 @@ const Dashboard = () => {
       </div>
       <div className="card">
         <h2 className="mb-2 font-semibold">Flagged Fraud Accounts</h2>
-        <ul className="space-y-1 text-sm">
+        <ul className="space-y-1 break-words text-sm">
           {data.fraud.map((f) => (
             <li key={f._id}>{f.user?.name} | {f.reason} | {f.severity}</li>
           ))}

@@ -17,14 +17,14 @@ const ChatbotWidget = () => {
 
   if (!open) {
     return (
-      <button className="btn-primary fixed bottom-4 right-4" onClick={() => setOpen(true)}>
+      <button className="btn-primary fixed bottom-3 right-3 z-40 text-sm sm:bottom-4 sm:right-4" onClick={() => setOpen(true)}>
         AI Chatbot
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-4 right-4 w-80 rounded-xl border bg-white p-3 shadow-xl dark:bg-slate-800">
+    <div className="fixed bottom-3 left-3 right-3 z-40 rounded-xl border bg-white p-3 shadow-xl dark:bg-slate-800 sm:bottom-4 sm:left-auto sm:right-4 sm:w-80">
       <div className="mb-2 flex items-center justify-between">
         <h4 className="font-semibold">Auction Assistant</h4>
         <button onClick={() => setOpen(false)}>x</button>
@@ -43,7 +43,7 @@ const ChatbotWidget = () => {
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Ask about auctions"
         />
-        <button className="btn-primary" onClick={ask}>
+        <button className="btn-primary px-3" onClick={ask}>
           Send
         </button>
       </div>

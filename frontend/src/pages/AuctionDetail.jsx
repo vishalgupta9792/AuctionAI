@@ -88,23 +88,23 @@ const AuctionDetail = () => {
           <img
             src={auction.imageUrl}
             alt={auction.title}
-            className="h-64 w-full object-cover"
+            className="h-52 w-full object-cover sm:h-64"
             onError={(e) => {
               e.currentTarget.src =
                 "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=1200&q=80";
             }}
           />
           <div className="p-4">
-            <h1 className="text-2xl font-bold">{auction.title}</h1>
-            <p className="mt-2 text-slate-500">{auction.description}</p>
-            <div className="mt-3 flex flex-wrap gap-4 text-sm">
+            <h1 className="text-xl font-bold sm:text-2xl">{auction.title}</h1>
+            <p className="mt-2 text-sm text-slate-500 sm:text-base">{auction.description}</p>
+            <div className="mt-3 flex flex-wrap gap-3 text-sm">
               <span>Status: {auction.status}</span>
               <span>Current: ${auction.currentPrice}</span>
               <span>Countdown: {countdown}</span>
             </div>
-            <div className="mt-3 flex gap-2">
-              <button className="btn-primary" onClick={askAi}>Get AI Bid Suggestion</button>
-              <button className="btn border" onClick={addWatchlist}>Add Watchlist</button>
+            <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+              <button className="btn-primary w-full sm:w-auto" onClick={askAi}>Get AI Bid Suggestion</button>
+              <button className="btn w-full border sm:w-auto" onClick={addWatchlist}>Add Watchlist</button>
             </div>
             {watchMsg && <p className="mt-2 text-sm">{watchMsg}</p>}
             {suggestion && (
