@@ -4,10 +4,24 @@ import AuctionCard from "../components/AuctionCard";
 
 const Trending = () => {
   const [sections, setSections] = useState({ mostBids: [], highestPrice: [], endingSoon: [] });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get("/auctions/trending").then((res) => setSections(res.data));
+    const loadTrending = async () => {
+      try {
+        const { data } = await api.get("/auctions/trending");
+        setSections(data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTrending();
+    const refresh = setInterval(loadTrending, 20000);
+    return () => clearInterval(refresh);
   }, []);
+
+  if (loading) return <div className="card">Loading trending auctions...</div>;
 
   return (
     <div className="space-y-8">

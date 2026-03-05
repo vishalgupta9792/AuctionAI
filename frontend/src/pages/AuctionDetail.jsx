@@ -3,10 +3,14 @@ import { useParams } from "react-router-dom";
 import api from "../api/client";
 import BidPanel from "../components/BidPanel";
 import { useSocket } from "../context/SocketContext";
+import {
+  FALLBACK_AUCTION_IMAGE,
+  formatINR,
+  getAuctionImage,
+  getCountdownText
+} from "../utils/auctionHelpers";
 
 const AuctionDetail = () => {
-  const formatINR = (amount) => `INR ${Number(amount || 0).toLocaleString("en-IN")}`;
-
   const { id } = useParams();
   const { socket } = useSocket();
   const [auction, setAuction] = useState(null);
@@ -28,8 +32,12 @@ const AuctionDetail = () => {
 
   useEffect(() => {
     const timer = setInterval(() => setTick(Date.now()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+    const refresh = setInterval(loadData, 20000);
+    return () => {
+      clearInterval(timer);
+      clearInterval(refresh);
+    };
+  }, [id]);
 
   useEffect(() => {
     if (!socket) return;
@@ -69,15 +77,10 @@ const AuctionDetail = () => {
     }
   };
 
-  const countdown = useMemo(() => {
-    if (!auction) return "";
-    const diff = new Date(auction.endTime) - new Date(tick);
-    if (diff <= 0) return "Ended";
-    const h = Math.floor(diff / (1000 * 60 * 60));
-    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const s = Math.floor((diff % (1000 * 60)) / 1000);
-    return `${h}h ${m}m ${s}s`;
-  }, [auction, tick]);
+  const countdown = useMemo(
+    () => (auction ? getCountdownText(auction.endTime, tick) : ""),
+    [auction, tick]
+  );
 
   if (!auction) return <p>Loading...</p>;
 
@@ -88,12 +91,12 @@ const AuctionDetail = () => {
       <div className="space-y-4 lg:col-span-2">
         <div className="card overflow-hidden p-0">
           <img
-            src={auction.imageUrl}
+            src={getAuctionImage(auction.imageUrl)}
             alt={auction.title}
             className="h-52 w-full object-cover sm:h-64"
+            loading="lazy"
             onError={(e) => {
-              e.currentTarget.src =
-                "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=1200&q=80";
+              e.currentTarget.src = FALLBACK_AUCTION_IMAGE;
             }}
           />
           <div className="p-4">

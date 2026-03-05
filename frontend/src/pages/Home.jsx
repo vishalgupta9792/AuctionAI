@@ -4,9 +4,21 @@ import AuctionCard from "../components/AuctionCard";
 
 const Home = () => {
   const [auctions, setAuctions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadAuctions = async () => {
+    try {
+      const { data } = await api.get("/auctions");
+      setAuctions(data || []);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    api.get("/auctions").then((res) => setAuctions(res.data));
+    loadAuctions();
+    const refresh = setInterval(loadAuctions, 20000);
+    return () => clearInterval(refresh);
   }, []);
 
   const live = useMemo(() => auctions.filter((a) => a.status === "Live"), [auctions]);
@@ -37,35 +49,42 @@ const Home = () => {
         </div>
       </section>
 
-      <section>
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Featured Auctions</h2>
-          <span className="text-sm text-slate-400">{auctions.length} total products</span>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {auctions.slice(0, 6).map((auction) => (
-            <AuctionCard key={auction._id} auction={auction} />
-          ))}
-        </div>
-      </section>
+      {loading ? (
+        <div className="card">Loading auctions...</div>
+      ) : (
+        <>
+          <section>
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">Featured Auctions</h2>
+              <span className="text-sm text-slate-400">{auctions.length} total products</span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {auctions.slice(0, 6).map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+            </div>
+          </section>
 
-      <section>
-        <h2 className="mb-3 text-xl font-semibold">Live Bidding Now</h2>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {live.slice(0, 6).map((auction) => (
-            <AuctionCard key={auction._id} auction={auction} />
-          ))}
-        </div>
-      </section>
+          <section>
+            <h2 className="mb-3 text-xl font-semibold">Live Bidding Now</h2>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {live.slice(0, 6).map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+            </div>
+            {live.length === 0 && <div className="card mt-3 text-sm text-slate-400">No live auctions currently.</div>}
+          </section>
 
-      <section>
-        <h2 className="mb-3 text-xl font-semibold">Recently Sold</h2>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {sold.slice(0, 6).map((auction) => (
-            <AuctionCard key={auction._id} auction={auction} />
-          ))}
-        </div>
-      </section>
+          <section>
+            <h2 className="mb-3 text-xl font-semibold">Recently Sold</h2>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {sold.slice(0, 6).map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </div>
   );
 };

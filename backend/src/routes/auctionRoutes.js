@@ -10,12 +10,16 @@ const router = express.Router();
 router.post("/", protect, allowRoles("Seller", "Admin"), async (req, res) => {
   try {
     const { title, description, imageUrl, basePrice, startTime, endTime } = req.body;
+    const safeImageUrl =
+      typeof imageUrl === "string" && imageUrl.trim().length > 0
+        ? imageUrl.trim()
+        : undefined;
     const auction = await Auction.create({
       title,
       description,
-      imageUrl,
-      basePrice,
-      currentPrice: basePrice,
+      imageUrl: safeImageUrl,
+      basePrice: Number(basePrice),
+      currentPrice: Number(basePrice),
       startTime,
       endTime,
       seller: req.user._id,

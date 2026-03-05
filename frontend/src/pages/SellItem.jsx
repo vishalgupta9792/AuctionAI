@@ -1,5 +1,9 @@
-﻿import { useState } from "react";
+﻿import { useMemo, useState } from "react";
 import api from "../api/client";
+import {
+  FALLBACK_AUCTION_IMAGE,
+  getAuctionImage
+} from "../utils/auctionHelpers";
 
 const SellItem = () => {
   const [form, setForm] = useState({
@@ -13,6 +17,8 @@ const SellItem = () => {
   const [message, setMessage] = useState("");
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+  const previewImage = useMemo(() => getAuctionImage(form.imageUrl), [form.imageUrl]);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -32,6 +38,18 @@ const SellItem = () => {
         <input className="w-full rounded border p-2 text-black" name="title" placeholder="Title" value={form.title} onChange={onChange} required />
         <textarea className="w-full rounded border p-2 text-black" name="description" placeholder="Description" value={form.description} onChange={onChange} required />
         <input className="w-full rounded border p-2 text-black" name="imageUrl" placeholder="Image URL (optional)" value={form.imageUrl} onChange={onChange} />
+
+        <div className="overflow-hidden rounded-xl border">
+          <img
+            src={previewImage}
+            alt="Auction preview"
+            className="h-40 w-full object-cover"
+            onError={(e) => {
+              e.currentTarget.src = FALLBACK_AUCTION_IMAGE;
+            }}
+          />
+        </div>
+
         <input className="w-full rounded border p-2 text-black" type="number" name="basePrice" placeholder="Base Price" value={form.basePrice} onChange={onChange} required />
         <input className="w-full rounded border p-2 text-black" type="datetime-local" name="startTime" value={form.startTime} onChange={onChange} required />
         <input className="w-full rounded border p-2 text-black" type="datetime-local" name="endTime" value={form.endTime} onChange={onChange} required />

@@ -1,4 +1,9 @@
 ﻿import { Link } from "react-router-dom";
+import {
+  FALLBACK_AUCTION_IMAGE,
+  formatINR,
+  getAuctionImage
+} from "../utils/auctionHelpers";
 
 const statusClasses = {
   Live: "bg-emerald-500 text-white",
@@ -7,8 +12,6 @@ const statusClasses = {
 };
 
 const AuctionCard = ({ auction }) => {
-  const formatINR = (amount) => `INR ${Number(amount || 0).toLocaleString("en-IN")}`;
-
   const label =
     auction.status === "Ended"
       ? auction.highestBidder
@@ -23,12 +26,12 @@ const AuctionCard = ({ auction }) => {
     >
       <div className="relative h-44 w-full overflow-hidden">
         <img
-          src={auction.imageUrl}
+          src={getAuctionImage(auction.imageUrl)}
           alt={auction.title}
           className="h-full w-full object-cover transition duration-300 hover:scale-105"
+          loading="lazy"
           onError={(e) => {
-            e.currentTarget.src =
-              "https://images.unsplash.com/photo-1484704849700-f032a568e944?auto=format&fit=crop&w=1200&q=80";
+            e.currentTarget.src = FALLBACK_AUCTION_IMAGE;
           }}
         />
         <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-semibold ${statusClasses[auction.status] || statusClasses.Ended}`}>
@@ -39,6 +42,9 @@ const AuctionCard = ({ auction }) => {
       <div className="p-4">
         <h3 className="line-clamp-1 text-lg font-semibold text-white">{auction.title}</h3>
         <p className="mt-2 line-clamp-2 text-sm text-slate-300">{auction.description}</p>
+        <p className="mt-1 text-xs text-slate-400">
+          Seller: {auction?.seller?.name || "Auction Seller"}
+        </p>
 
         <div className="mt-4 flex items-center justify-between text-sm">
           <span className="rounded-md bg-slate-700 px-2 py-1 text-slate-200">{auction.bidCount || 0} bids</span>
