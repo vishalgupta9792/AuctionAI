@@ -26,7 +26,7 @@ const AuctionCard = ({ auction }) => {
     >
       <div className="relative h-44 w-full overflow-hidden">
         <img
-          src={getAuctionImage(auction.imageUrl)}
+          src={getAuctionImage(auction)}
           alt={auction.title}
           className="h-full w-full object-cover transition duration-300 hover:scale-105"
           loading="lazy"

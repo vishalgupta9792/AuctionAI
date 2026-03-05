@@ -18,7 +18,15 @@ const SellItem = () => {
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const previewImage = useMemo(() => getAuctionImage(form.imageUrl), [form.imageUrl]);
+  const smartPreview = useMemo(
+    () =>
+      getAuctionImage({
+        imageUrl: form.imageUrl,
+        title: form.title,
+        description: form.description
+      }),
+    [form.imageUrl, form.title, form.description]
+  );
 
   const submit = async (e) => {
     e.preventDefault();
@@ -41,7 +49,7 @@ const SellItem = () => {
 
         <div className="overflow-hidden rounded-xl border">
           <img
-            src={previewImage}
+            src={smartPreview}
             alt="Auction preview"
             className="h-40 w-full object-cover"
             onError={(e) => {

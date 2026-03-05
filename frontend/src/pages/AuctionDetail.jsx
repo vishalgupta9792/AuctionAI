@@ -91,7 +91,7 @@ const AuctionDetail = () => {
       <div className="space-y-4 lg:col-span-2">
         <div className="card overflow-hidden p-0">
           <img
-            src={getAuctionImage(auction.imageUrl)}
+            src={getAuctionImage(auction)}
             alt={auction.title}
             className="h-52 w-full object-cover sm:h-64"
             loading="lazy"
