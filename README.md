@@ -240,3 +240,5 @@ Payment APIs:
 - `GET /api/payments/my`
 
 Frontend bidder dashboard now opens Razorpay checkout for won auctions.
+
+Vishal Gupta
