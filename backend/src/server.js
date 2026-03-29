@@ -20,13 +20,23 @@ connectDB();
 
 const app = express();
 
-const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
+const allowedOrigins = (process.env.CLIENT_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 const localhostPattern = /^http:\/\/(localhost|127\.0\.0\.1):\d+$/;
+const vercelPattern = /^https:\/\/[a-z0-9-]+\.vercel\.app$/i;
+
+const isAllowedOrigin = (origin) =>
+  !origin ||
+  allowedOrigins.includes(origin) ||
+  localhostPattern.test(origin) ||
+  vercelPattern.test(origin);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || localhostPattern.test(origin)) {
+      if (isAllowedOrigin(origin)) {
         return callback(null, true);
       }
       return callback(new Error("Not allowed by CORS"));
@@ -49,7 +59,12 @@ app.use("/api/payments", paymentRoutes);
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      if (isAllowedOrigin(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["GET", "POST"]
   }
 });
