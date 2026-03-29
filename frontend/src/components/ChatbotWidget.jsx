@@ -8,6 +8,37 @@ const QUICK_PROMPTS = [
   "Explain payment after winning"
 ];
 
+const buildClientFallbackReply = (prompt, backendMessage = "") => {
+  const text = String(prompt || "").toLowerCase();
+  const safeBackendMessage = String(backendMessage || "").toLowerCase();
+
+  if (text.includes("trending")) {
+    return "Trending auctions are available on the Trending page, where you can track the most active, highest-value, and fastest-closing lots.";
+  }
+
+  if (text.includes("live")) {
+    return "You can open the Live Auctions page to see all active lots, current prices, bid counts, and countdown timers in real time.";
+  }
+
+  if (text.includes("payment") || text.includes("pay") || text.includes("buy")) {
+    return "After an auction ends, the highest bidder gets a Pay Now option inside the dashboard. Complete the Razorpay flow there to finish the purchase.";
+  }
+
+  if (text.includes("bid") || text.includes("bidding")) {
+    return "To place a bid, open a live auction and enter an amount higher than the current price. Keep an eye on the countdown, because the highest valid bid at closing wins.";
+  }
+
+  if (
+    safeBackendMessage.includes("api key") ||
+    safeBackendMessage.includes("incorrect api key") ||
+    safeBackendMessage.includes("openai")
+  ) {
+    return "The AI assistant is using its built-in auction guidance right now. I can still help with live auctions, trending lots, bidding flow, and payment steps.";
+  }
+
+  return "I can help with live auctions, trending lots, bidding rules, dashboard actions, and payment steps. Try asking about any of those topics.";
+};
+
 const ChatbotWidget = () => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -33,9 +64,10 @@ const ChatbotWidget = () => {
       const { data } = await api.post("/ai/chatbot", { message: userMsg });
       setLog((prev) => [...prev, { role: "AI", text: data.reply }]);
     } catch (error) {
-      const fallback =
-        error?.response?.data?.message ||
-        "I could not answer that right now. Please try again in a moment.";
+      const fallback = buildClientFallbackReply(
+        userMsg,
+        error?.response?.data?.message || error?.message || ""
+      );
       setLog((prev) => [...prev, { role: "AI", text: fallback }]);
     } finally {
       setLoading(false);
